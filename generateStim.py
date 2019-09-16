@@ -1,95 +1,91 @@
-# get input:
-    # X minLength = 2
-    # X maxLength = 25 
-    # - must be larger than min length 
-    # X numberOfTrials 
-    # X default = 50 
-    # <must be multiple of 10, (i.e. number of bins is 10)>
-    # X condition - choose "ratio" of "difference" (or mixed? - not yet implemented), 
-    # X sameOnTheLeft - bool if True, most similar stimulus pairs will be mapped to the far left of the response bar (0) and least similar will be mapped to the far right (1)
-    # if False, vice versa
-
-
-# starting with a tk template
-
 from tkinter import *
 from tkinter import ttk
+class Generator():
+	def __init__(self):
+		self.setup()
 
-def generate(*args):
-    allow = True
-    try:
-        valueMinLength = int(minLength.get())
-        valueMaxLength = int(maxLength.get())
-        valueCondition = str(condition.get())
-        valueSameOnLeft = bool(mapping.get())
-        valueTrials = int(trials.get())
-        if valueMaxLength <= valueMinLength:
-            popupmsg("Maximum value must be larger than minimum value")
-            allow = False
-        elif valueTrials%10 != 0:
-            allow = False
-            popupmsg("Trial number must be a multiple of 10")
+	def generate(self):
+		allow = True
+		try:
+			valueMinLength = int(self.minLength.get())
+			valueMaxLength = int(self.maxLength.get())
+			valueCondition = str(self.condition.get())
+			valueSameOnLeft = bool(self.mapping.get())
+			valueTrials = int(self.trials.get())
+			if valueMaxLength <= valueMinLength:
+				self.popupmsg("Maximum value must be larger than minimum value", "Warning")
+				allow = False
+			elif valueTrials%10 != 0:
+				allow = False
+				self.popupmsg("Trial number must be a multiple of 10", "Warning")
 
-    except ValueError:
-        popupmsg("Enter values in all fields")
-    if allow:
-        popupmsg("Running stimulus generation code")
-
-
-def popupmsg(msg):
-    popup = Toplevel(root)
-    popup.wm_title("Warning")
-    popup.tkraise(root)
-    Label(popup, text=msg).pack(side="top", fill="x", pady=10, padx = 15)
-    Button(popup, text="Okay", command = popup.destroy).pack(pady=10)
-
-root = Tk()
-root.title("Stimulus Generator")
-
-mainframe = ttk.Frame(root, padding="3 3 12 12")
-mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
-root.columnconfigure(0, weight=1)
-root.rowconfigure(0, weight=1)
+		except ValueError:
+			self.popupmsg("Enter values in all fields", "Warning")
+		if allow:
+			self.popupmsg("Running stimulus generation code", "Stimulus Generator")
 
 
-minLength = IntVar(mainframe, value=2)
-ttk.Label(mainframe, text="Minimum Stimulus Dimension:").grid(column=1, row=1, sticky=W)
-minLength_entry = ttk.Entry(mainframe, width=7, textvariable=minLength)
-minLength_entry.grid(column=2, row=1, sticky=(W, E))
+	def popupmsg(self, msg, title):
+		popup = Toplevel(self.root)
+		popup.wm_title(title)
+		popup.tkraise(self.root)
+		Label(popup, text=msg).pack(side="top", fill="x", pady=10, padx = 15)
+		Button(popup, text="Okay", command = popup.destroy).pack(pady=10)
 
-maxLength = IntVar(mainframe, value=25)
-ttk.Label(mainframe, text="Maximum Stimulus Dimension:").grid(column=1, row=2, sticky=W)
-maxLength_entry = ttk.Entry(mainframe, width=7, textvariable=maxLength)
-maxLength_entry.grid(column=2, row=2, sticky=(W, E))
+	def setup(self):
+		self.root = Tk()
+		self.root.title("Stimulus Generator")
 
-condition = StringVar(mainframe, "difference")
-ttk.Label(mainframe, text="Condition:").grid(column=1, row=3, sticky=W)
-condition_entry = ttk.Radiobutton(mainframe, text="Difference", variable=condition, value="difference").grid(column=2, row=3, sticky=(W))
-condition_entry = ttk.Radiobutton(mainframe, text="Ratio", variable=condition, value="ratio").grid(column=3, row=3, sticky=(W))
-
-mapping = StringVar(mainframe, True)
-ttk.Label(mainframe, text="Mapping:").grid(column=1, row=4, sticky=W)
-condition_entry = ttk.Radiobutton(mainframe, text="Same -> Different", variable=mapping, value=True).grid(column=2, row=4, sticky=(W))
-condition_entry = ttk.Radiobutton(mainframe, text="Different -> Same", variable=mapping, value=False).grid(column=3, row=4, sticky=(W))
-
-trials = IntVar(mainframe, value=50)
-ttk.Label(mainframe, text="Number of trials per block:").grid(column=1, row=5, sticky=W)
-trials_entry = ttk.Entry(mainframe, width=7, textvariable=trials)
-trials_entry.grid(column=2, row=5, sticky=(W, E))
-
-genBtn = ttk.Button(mainframe, text="Generate", command=generate).grid(column=3, row=6, sticky=W)
+		mainframe = ttk.Frame(self.root, padding="3 3 12 12")
+		mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
+		self.root.columnconfigure(0, weight=1)
+		self.root.rowconfigure(0, weight=1)
 
 
+		self.minLength = IntVar(mainframe, value=2)
+		ttk.Label(mainframe, text="Minimum Stimulus Dimension:").grid(column=1, row=1, sticky=W)
+		minLength_entry = ttk.Entry(mainframe, width=7, textvariable=self.minLength)
+		minLength_entry.grid(column=2, row=1, sticky=(W, E))
 
-for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
+		self.maxLength = IntVar(mainframe, value=25)
+		ttk.Label(mainframe, text="Maximum Stimulus Dimension:").grid(column=1, row=2, sticky=W)
+		maxLength_entry = ttk.Entry(mainframe, width=7, textvariable=self.maxLength)
+		maxLength_entry.grid(column=2, row=2, sticky=(W, E))
 
-root.bind('<Return>', generate)
-root.bind('<Escape>', lambda e: root.destroy())
+		self.condition = StringVar(mainframe, "difference")
+		ttk.Label(mainframe, text="Condition:").grid(column=1, row=3, sticky=W)
+		condition_entry = ttk.Radiobutton(mainframe, text="Difference", variable=self.condition, value="difference").grid(column=2, row=3, sticky=(W))
+		condition_entry = ttk.Radiobutton(mainframe, text="Ratio", variable=self.condition, value="ratio").grid(column=3, row=3, sticky=(W))
 
-root.mainloop()
+		self.mapping = StringVar(mainframe, True)
+		ttk.Label(mainframe, text="Mapping:").grid(column=1, row=4, sticky=W)
+		condition_entry = ttk.Radiobutton(mainframe, text="Same -> Different", variable=self.mapping, value=True).grid(column=2, row=4, sticky=(W))
+		condition_entry = ttk.Radiobutton(mainframe, text="Different -> Same", variable=self.mapping, value=False).grid(column=3, row=4, sticky=(W))
+
+		self.trials = IntVar(mainframe, value=50)
+		ttk.Label(mainframe, text="Number of trials per block:").grid(column=1, row=5, sticky=W)
+		trials_entry = ttk.Entry(mainframe, width=7, textvariable=self.trials)
+		trials_entry.grid(column=2, row=5, sticky=(W, E))
+
+		genBtn = ttk.Button(mainframe, text="Generate", command=self.generate).grid(column=3, row=6, sticky=W)
+
+		for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
+
+		self.root.bind('<Return>', self.generate)
+		self.root.bind('<Escape>', lambda e: self.root.destroy())
+
 
 # use input values to generate stimulus set
 
 # write stimulus set to csv
 
 # write info file to txt
+
+
+# START APP ##########################################################################################################
+if __name__ == "__main__":
+	generator = Generator()
+	try:
+		generator.root.mainloop()
+	except (KeyboardInterrupt, SystemExit):
+		raise
