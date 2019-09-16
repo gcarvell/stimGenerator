@@ -2,10 +2,7 @@ import numpy as np
 import functools
 import operator
 
-def getStim():
-    minLength = 2
-    maxLength = 25
-    numberOfTrials = 50
+def getStim(minLength,maxLength,numberOfTrials):
     numberOfBins = 10
     
     xs = range(minLength, maxLength + 1)
@@ -51,6 +48,7 @@ def getStim():
             
     return stimSet
 
-stim = getStim()
-print(len(stim))
-# print(stim)
+if __name__ == "__main__":
+    stim = getStim()
+    print(len(stim))
+    # print(stim)

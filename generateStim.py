@@ -1,5 +1,8 @@
 from tkinter import *
 from tkinter import ttk
+import differenceGen as dGen
+import ratioGen as rGen
+
 class Generator():
 	def __init__(self):
 		self.setup()
@@ -22,7 +25,15 @@ class Generator():
 		except ValueError:
 			self.popupmsg("Enter values in all fields", "Warning")
 		if allow:
-			self.popupmsg("Running stimulus generation code", "Stimulus Generator")
+			if valueCondition == 'difference':
+				self.stim = dGen.getStim(valueMinLength, valueMaxLength, valueTrials)
+				self.root.destroy()
+			elif valueCondition == "ratio":
+				self.stim = rGen.getStim(valueMinLength, valueMaxLength, valueTrials)
+				self.root.destroy()
+			else:
+				self.popupmsg("Problem with condition", "Warning")
+
 
 
 	def popupmsg(self, msg, title):
