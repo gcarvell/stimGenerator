@@ -1,13 +1,13 @@
 
 def mapThis(stim, condition, sameOnTheLeft):
-	
+
 	numberOfTrials = len(stim)
 	values = []
 	for s in stim:
 		values.append(s[2])
 
 	mapped = []
-	if condition is "difference":
+	if condition == "difference":
 		leastSimilar = max(values)
 		for value in values:
 			mappedValue = value/leastSimilar
@@ -16,7 +16,7 @@ def mapThis(stim, condition, sameOnTheLeft):
 			else:
 				mapped.append(1-mappedValue)
 
-	elif condition is "ratio":
+	elif condition == "ratio":
 		for value in values:
 			mappedValue = value
 			if sameOnTheLeft:

@@ -1,7 +1,11 @@
 from tkinter import *
+from tkinter import filedialog
 from tkinter import ttk
 import differenceGen as dGen
 import ratioGen as rGen
+import mapping as mp
+from datetime import datetime
+import numpy as np
 
 class Generator():
 	def __init__(self):
@@ -27,14 +31,37 @@ class Generator():
 		if allow:
 			if valueCondition == 'difference':
 				self.stim = dGen.getStim(valueMinLength, valueMaxLength, valueTrials)
-				self.root.destroy()
 			elif valueCondition == "ratio":
 				self.stim = rGen.getStim(valueMinLength, valueMaxLength, valueTrials)
-				self.root.destroy()
 			else:
 				self.popupmsg("Problem with condition", "Warning")
+			mappedStim = mp.mapThis(self.stim, valueCondition, valueSameOnLeft)
+			if valueSameOnLeft:
+				mappingInfo = "Left to Right (more similar on the left)"
+			else:
+				mappingInfo = "Right to Left (less similar on the left)"
+			info = [valueMinLength, valueMaxLength, valueCondition, mappingInfo, valueTrials]
+			self.save(info, mappedStim)
 
+	def save(self, info, stim):
+		# get file name
+		csvFilename = "C:/Users/georg/OneDrive/Documents/SameDifferent{}.csv".format(np.random.randint(999))
+		# csvFilename =  filedialog.asksaveasfilename(initialdir = "/",title = "Save File As",defaultextension = ".csv", filetypes = (("CSV File","*.csv"),("All Files","*.*")))
+		# write to csv
 
+		# write to txt
+		txtFilename = csvFilename[:-3] + "txt" 
+		labels = ["Minimum Stimulus Dimension: ", "Maximum Stimulus Dimension: ", "Condition: ", "Mapping: ", "Number of Trials: "]
+		infoWithLabels = " Artificial Algebra Task\n~~~~~~~~~~~~~~~~~~~~~~~~~\nStimulus set generated: {}\n\n".format(datetime.now())
+		for i, item in enumerate(info):
+			infoWithLabels += (labels[i] + str(item) + "\n")
+		infoWithLabels += "\nStimulus file name: {}\nStimulus file setup: Left Stimulus Magnitude, Right Stimulus Magnitude, True {}, Mapped {}".format(csvFilename, info[2], info[2])
+
+		txtFile = open(txtFilename, 'w')
+		txtFile.writelines(infoWithLabels)
+		txtFile.close()
+
+		self.root.after(1000, self.root.destroy)
 
 	def popupmsg(self, msg, title):
 		popup = Toplevel(self.root)
@@ -68,7 +95,7 @@ class Generator():
 		condition_entry = ttk.Radiobutton(mainframe, text="Difference", variable=self.condition, value="difference").grid(column=2, row=3, sticky=(W))
 		condition_entry = ttk.Radiobutton(mainframe, text="Ratio", variable=self.condition, value="ratio").grid(column=3, row=3, sticky=(W))
 
-		self.mapping = StringVar(mainframe, True)
+		self.mapping = BooleanVar(mainframe, True)
 		ttk.Label(mainframe, text="Mapping:").grid(column=1, row=4, sticky=W)
 		condition_entry = ttk.Radiobutton(mainframe, text="Same -> Different", variable=self.mapping, value=True).grid(column=2, row=4, sticky=(W))
 		condition_entry = ttk.Radiobutton(mainframe, text="Different -> Same", variable=self.mapping, value=False).grid(column=3, row=4, sticky=(W))
@@ -82,16 +109,13 @@ class Generator():
 
 		for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
 
-		self.root.bind('<Return>', self.generate)
+		self.root.bind('<Return>', lambda e: self.generate())
 		self.root.bind('<Escape>', lambda e: self.root.destroy())
 
 
-# use input values to generate stimulus set
-
 # write stimulus set to csv
 
-# write info file to txt
-
+# add a load saved option
 
 # START APP ##########################################################################################################
 if __name__ == "__main__":
