@@ -20,20 +20,28 @@ def generate(*args):
     try:
         valueMinLength = int(minLength.get())
         valueMaxLength = int(maxLength.get())
-        if valueMaxLength <= valueMinLength:
-            print("Maximum value must be larger than minimum value")
-            allow = False
         valueCondition = str(condition.get())
         valueSameOnLeft = bool(mapping.get())
         valueTrials = int(trials.get())
-        if valueTrials%10 != 0:
+        if valueMaxLength <= valueMinLength:
+            popupmsg("Maximum value must be larger than minimum value")
             allow = False
-            print("trial number must be a multiple of 10")
+        elif valueTrials%10 != 0:
+            allow = False
+            popupmsg("Trial number must be a multiple of 10")
 
     except ValueError:
-        print("enter values in all fields")
+        popupmsg("Enter values in all fields")
     if allow:
-        print("Run stimulus generation code")
+        popupmsg("Running stimulus generation code")
+
+
+def popupmsg(msg):
+    popup = Toplevel(root)
+    popup.wm_title("Warning")
+    popup.tkraise(root)
+    Label(popup, text=msg).pack(side="top", fill="x", pady=10, padx = 15)
+    Button(popup, text="Okay", command = popup.destroy).pack(pady=10)
 
 root = Tk()
 root.title("Stimulus Generator")
@@ -75,13 +83,13 @@ genBtn = ttk.Button(mainframe, text="Generate", command=generate).grid(column=3,
 
 for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
 
-# genBtn.focus()
 root.bind('<Return>', generate)
 root.bind('<Escape>', lambda e: root.destroy())
 
 root.mainloop()
 
+# use input values to generate stimulus set
 
-# write stim to csv
+# write stimulus set to csv
 
-# write info file
+# write info file to txt
