@@ -6,6 +6,7 @@ import ratioGen as rGen
 import mapping as mp
 from datetime import datetime
 import numpy as np
+import csv
 
 class Generator():
 	def __init__(self):
@@ -45,10 +46,15 @@ class Generator():
 
 	def save(self, info, stim):
 		# get file name
-		csvFilename = "C:/Users/georg/OneDrive/Documents/SameDifferent{}.csv".format(np.random.randint(999))
-		# csvFilename =  filedialog.asksaveasfilename(initialdir = "/",title = "Save File As",defaultextension = ".csv", filetypes = (("CSV File","*.csv"),("All Files","*.*")))
+
+		csvFilename =  filedialog.asksaveasfilename(initialdir = "/",title = "Save File As",defaultextension = ".csv", filetypes = (("CSV File","*.csv"),("All Files","*.*")))
 		# write to csv
 
+		with open(csvFilename, 'a', newline='') as output:
+			writer = csv.writer(output)
+			for row in stim:
+				writer.writerow(row)
+		output.close()
 		# write to txt
 		txtFilename = csvFilename[:-3] + "txt" 
 		labels = ["Minimum Stimulus Dimension: ", "Maximum Stimulus Dimension: ", "Condition: ", "Mapping: ", "Number of Trials: "]
@@ -116,6 +122,7 @@ class Generator():
 # write stimulus set to csv
 
 # add a load saved option
+
 
 # START APP ##########################################################################################################
 if __name__ == "__main__":
