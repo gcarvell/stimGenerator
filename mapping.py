@@ -1,7 +1,6 @@
 
 def mapThis(stim, condition, sameOnTheLeft):
 
-	numberOfTrials = len(stim)
 	values = []
 	for s in stim:
 		values.append(s[2])

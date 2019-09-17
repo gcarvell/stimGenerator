@@ -2,7 +2,7 @@ import numpy as np
 import functools
 import operator
 
-def getStim(minLength,maxLength,numberOfTrials):
+def getStim(minLength,maxLength,numberOfTrials, allowIndentical):
     numberOfBins = 10
     
     xs = range(minLength, maxLength + 1)

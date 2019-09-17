@@ -20,6 +20,7 @@ class Generator():
 			valueCondition = str(self.condition.get())
 			valueSameOnLeft = bool(self.mapping.get())
 			valueTrials = int(self.trials.get())
+			valueAllowIndentical = bool(self.allowIdentical.get())
 			if valueMaxLength <= valueMinLength:
 				self.popupmsg("Maximum value must be larger than minimum value", "Warning")
 				allow = False
@@ -31,9 +32,9 @@ class Generator():
 			self.popupmsg("Enter values in all fields", "Warning")
 		if allow:
 			if valueCondition == 'difference':
-				self.stim = dGen.getStim(valueMinLength, valueMaxLength, valueTrials)
+				self.stim = dGen.getStim(valueMinLength, valueMaxLength, valueTrials, valueAllowIndentical)
 			elif valueCondition == "ratio":
-				self.stim = rGen.getStim(valueMinLength, valueMaxLength, valueTrials)
+				self.stim = rGen.getStim(valueMinLength, valueMaxLength, valueTrials, valueAllowIndentical)
 			else:
 				self.popupmsg("Problem with condition", "Warning")
 			mappedStim = mp.mapThis(self.stim, valueCondition, valueSameOnLeft)
@@ -41,7 +42,7 @@ class Generator():
 				mappingInfo = "Left to Right (more similar on the left)"
 			else:
 				mappingInfo = "Right to Left (less similar on the left)"
-			info = [valueMinLength, valueMaxLength, valueCondition, mappingInfo, valueTrials]
+			info = [valueMinLength, valueMaxLength, valueCondition, mappingInfo, valueTrials, valueAllowIndentical]
 			self.save(info, mappedStim)
 
 	def save(self, info, stim):
@@ -56,7 +57,7 @@ class Generator():
 			output.close()
 			# write to txt
 			txtFilename = csvFilename[:-3] + "txt" 
-			labels = ["Minimum Stimulus Dimension: ", "Maximum Stimulus Dimension: ", "Condition: ", "Mapping: ", "Number of Trials: "]
+			labels = ["Minimum Stimulus Dimension: ", "Maximum Stimulus Dimension: ", "Condition: ", "Mapping: ", "Number of Trials: ", "Allow identical pairs?: "]
 			infoWithLabels = " Artificial Algebra Task\n~~~~~~~~~~~~~~~~~~~~~~~~~\nStimulus set generated: {}\n\n".format(datetime.now())
 			for i, item in enumerate(info):
 				infoWithLabels += (labels[i] + str(item) + "\n")
@@ -105,8 +106,8 @@ class Generator():
 
 		self.mapping = BooleanVar(mainframe, True)
 		ttk.Label(mainframe, text="Mapping:").grid(column=1, row=4, sticky=W)
-		condition_entry = ttk.Radiobutton(mainframe, text="Same -> Different", variable=self.mapping, value=True).grid(column=2, row=4, sticky=(W))
-		condition_entry = ttk.Radiobutton(mainframe, text="Different -> Same", variable=self.mapping, value=False).grid(column=3, row=4, sticky=(W))
+		mapping_entry = ttk.Radiobutton(mainframe, text="Same -> Different", variable=self.mapping, value=True).grid(column=2, row=4, sticky=(W))
+		mapping_entry = ttk.Radiobutton(mainframe, text="Different -> Same", variable=self.mapping, value=False).grid(column=3, row=4, sticky=(W))
 
 		self.trials = IntVar(mainframe, value=50)
 		ttk.Label(mainframe, text="Number of trials per block:").grid(column=1, row=5, sticky=W)

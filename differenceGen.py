@@ -2,7 +2,7 @@ import numpy as np
 import functools
 import operator
 
-def getStim(minLength,maxLength,numberOfTrials):
+def getStim(minLength,maxLength,numberOfTrials, allowIndentical):
     numberOfBins = 10
     
     xs = range(minLength, maxLength + 1)
@@ -11,7 +11,11 @@ def getStim(minLength,maxLength,numberOfTrials):
     pairs = list(map(lambda x: list(map(lambda y: (x, y, x - y if x > y else y - x), ys)), xs))
 
     # flatten list of pairs
-    flatPairs = functools.reduce(operator.concat, pairs)
+    if allowIndentical:
+        flatPairs = functools.reduce(operator.concat, pairs)
+    else:
+        # remove all pairs where x == y (i.e. both stimuli are the same)
+        flatPairs = list(filter(lambda t: t[0] != t[1], functools.reduce(operator.concat, pairs)))
     # sort flat pairs by difference
     flatPairs.sort(key = lambda x: x[2])
     # list with only the differences from each possible pair (for sorting)
