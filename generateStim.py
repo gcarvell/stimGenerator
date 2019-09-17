@@ -46,28 +46,30 @@ class Generator():
 
 	def save(self, info, stim):
 		# get file name
-
 		csvFilename =  filedialog.asksaveasfilename(initialdir = "/",title = "Save File As",defaultextension = ".csv", filetypes = (("CSV File","*.csv"),("All Files","*.*")))
 		# write to csv
+		try:
+			with open(csvFilename, 'a', newline='') as output:
+				writer = csv.writer(output)
+				for row in stim:
+					writer.writerow(row)
+			output.close()
+			# write to txt
+			txtFilename = csvFilename[:-3] + "txt" 
+			labels = ["Minimum Stimulus Dimension: ", "Maximum Stimulus Dimension: ", "Condition: ", "Mapping: ", "Number of Trials: "]
+			infoWithLabels = " Artificial Algebra Task\n~~~~~~~~~~~~~~~~~~~~~~~~~\nStimulus set generated: {}\n\n".format(datetime.now())
+			for i, item in enumerate(info):
+				infoWithLabels += (labels[i] + str(item) + "\n")
+			infoWithLabels += "\nStimulus file name: {}\nStimulus file setup: Left Stimulus Magnitude, Right Stimulus Magnitude, True {}, Mapped {}".format(csvFilename, info[2], info[2])
 
-		with open(csvFilename, 'a', newline='') as output:
-			writer = csv.writer(output)
-			for row in stim:
-				writer.writerow(row)
-		output.close()
-		# write to txt
-		txtFilename = csvFilename[:-3] + "txt" 
-		labels = ["Minimum Stimulus Dimension: ", "Maximum Stimulus Dimension: ", "Condition: ", "Mapping: ", "Number of Trials: "]
-		infoWithLabels = " Artificial Algebra Task\n~~~~~~~~~~~~~~~~~~~~~~~~~\nStimulus set generated: {}\n\n".format(datetime.now())
-		for i, item in enumerate(info):
-			infoWithLabels += (labels[i] + str(item) + "\n")
-		infoWithLabels += "\nStimulus file name: {}\nStimulus file setup: Left Stimulus Magnitude, Right Stimulus Magnitude, True {}, Mapped {}".format(csvFilename, info[2], info[2])
+			txtFile = open(txtFilename, 'w')
+			txtFile.writelines(infoWithLabels)
+			txtFile.close()
+			self.root.after(750, self.root.destroy)
+		except FileNotFoundError:
+			self.popupmsg("Filename invalid", "Warning")
 
-		txtFile = open(txtFilename, 'w')
-		txtFile.writelines(infoWithLabels)
-		txtFile.close()
 
-		self.root.after(1000, self.root.destroy)
 
 	def popupmsg(self, msg, title):
 		popup = Toplevel(self.root)
@@ -111,7 +113,12 @@ class Generator():
 		trials_entry = ttk.Entry(mainframe, width=7, textvariable=self.trials)
 		trials_entry.grid(column=2, row=5, sticky=(W, E))
 
-		genBtn = ttk.Button(mainframe, text="Generate", command=self.generate).grid(column=3, row=6, sticky=W)
+		self.allowIdentical = BooleanVar(mainframe, value=TRUE)
+		ttk.Label(mainframe, text="Allow identical pairs").grid(column=1, row=6, sticky=W)
+		allowIdentical_entry = Checkbutton(mainframe, variable=self.allowIdentical)
+		allowIdentical_entry.grid(column=2, row=6, sticky=(W))
+
+		genBtn = ttk.Button(mainframe, text="Generate", command=self.generate).grid(column=3, row=7, sticky=W)
 
 		for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
 
@@ -119,7 +126,7 @@ class Generator():
 		self.root.bind('<Escape>', lambda e: self.root.destroy())
 
 
-# write stimulus set to csv
+
 
 # add a load saved option
 
